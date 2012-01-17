@@ -13,6 +13,8 @@ module Repodata
     def fetch_if_newer
       res = fetch_loop
 
+      make_dirs
+
       open(@filename, 'w') do |io|
         io.write(res.body)
       end if res.is_a?(Net::HTTPSuccess)
