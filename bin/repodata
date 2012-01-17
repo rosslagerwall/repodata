@@ -1,0 +1,7 @@
+require 'repodata/runner'
+
+Repodata::Runner.new.run
+
+# Local Variables:
+# mode: ruby
+# End:
