@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'repodata/runner'
 
 Repodata::Runner.new.run
