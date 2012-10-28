@@ -1,0 +1,6 @@
+Installation
+============
+
+Build the project with rake and then install it with gem:
+>>> rake gem
+>>> gem install pkg/repodata-*.gem

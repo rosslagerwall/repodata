@@ -19,18 +19,21 @@ sqlite3 gem - http://rubygems.org/gems/sqlite3
 Installation
 ------------
 
-TODO
+See the separate file, INSTALL.
 
 Using
 -----
 
 Make a config file with the source urls in it (explain).
 Run the program:
->>> repodata example.conf
+>>> repodata <config>
 <long list of packages>
 
 Contributing
 ------------
+
+To run from inside the source tree:
+>>> RUBYLIB=lib bin/repodata <config>
 
 Fork it on GitHub, hack away, and then send a pull request.
 
