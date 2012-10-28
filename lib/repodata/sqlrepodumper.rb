@@ -1,3 +1,8 @@
+# Copyright (C) The repodata authors.
+#
+# This software may be used and distributed according to the terms of the
+# GNU General Public License version 2 or any later version.
+
 require 'sqlite3'
 require_relative 'repodumper'
 
