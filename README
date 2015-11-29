@@ -24,7 +24,23 @@ See the separate file, INSTALL.
 Using
 -----
 
-Make a config file with the source urls in it (explain).
+Make a config file with the source urls in it. For example:
+>>> cat ubuntu-14.04.config
+name = Ubuntu
+version = 14.04
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty/main/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty/multiverse/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty/restricted/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty/universe/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-security/main/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-security/multiverse/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-security/restricted/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-security/universe/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-updates/main/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-updates/multiverse/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-updates/restricted/source/Sources.bz2
+url.debian = http://archive.ubuntu.com/ubuntu/dists/trusty-updates/universe/source/Sources.bz2
+
 Run the program:
 >>> repodata <config>
 <long list of packages>
