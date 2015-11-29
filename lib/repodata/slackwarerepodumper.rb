@@ -6,13 +6,15 @@
 require_relative 'repodumper'
 
 module Repodata
-  class DebRepoDumper < RepoDumper
-    private
+  class SlackwareRepoDumper < RepoDumper
+    protected
     def dump_imp
-      IO.foreach(@actual_fn) do |line|
+      @file.each do |line|
         begin
-          print(line.strip[9..-1] + '_') if line =~ /^Package:/
-          puts(line.strip[9..-1]) if line =~ /^Version:/
+          if line =~ /^PACKAGE NAME:  /
+            line = line.strip[15..-5].split('-')
+            puts "#{line[0..-4].join('-')},,#{line[-3]},#{line[-1]}"
+          end
         rescue ArgumentError
           # sometimes conatins invalid UTF-8 bytes, ignore
         end

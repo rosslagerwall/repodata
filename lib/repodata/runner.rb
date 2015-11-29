@@ -5,10 +5,18 @@
 
 require 'open-uri'
 require 'rexml/document'
-require_relative 'xmlrepodumper'
-require_relative 'sqlrepodumper'
+require_relative 'suserepodumper'
+require_relative 'suse2repodumper'
+require_relative 'fedorarepodumper'
 require_relative 'indexrepodumper'
-require_relative 'debrepodumper'
+require_relative 'debianrepodumper'
+require_relative 'mageiarepodumper'
+require_relative 'mandrivarepodumper'
+require_relative 'archrepodumper'
+require_relative 'slackwarerepodumper'
+require_relative 'pclinuxosrepodumper'
+require_relative 'gentoorepodumper'
+require_relative 'lfsrepodumper'
 require_relative 'jobqueue'
 
 module Repodata
@@ -29,18 +37,41 @@ module Repodata
 
       IO.foreach(config) do |line|
         line.strip!
-        if line =~ /repomd.xml$/
-          line = line.split('/')[0..-3].join('/') + '/' + repomd_url(line)
+        if not line =~ /^url\./
+            next
+        end
+        line = line[4..-1].split('=').collect { |e| e.strip! }
+        type = line[0]
+        url = line[1]
+
+        if url =~ /repomd.xml$/
+          url = url.split('/')[0..-3].join('/') + '/' + repomd_url(url)
         end
 
-        if line =~ /.xml/
-          urls << Repodata::XMLRepoDumper.new(line)
-        elsif line =~ /Sources/
-          urls << Repodata::DebRepoDumper.new(line)
-        elsif line =~ /sqlite/
-          urls << Repodata::SQLRepoDumper.new(line)
-        elsif line =~ %r{/$}
-          urls << Repodata::IndexRepoDumper.new(line)
+        if type == "fedora"
+            urls << Repodata::FedoraRepoDumper.new(url)
+        elsif type == "debian"
+            urls << Repodata::DebianRepoDumper.new(url)
+        elsif type == "mageia"
+            urls << Repodata::MageiaRepoDumper.new(url)
+        elsif type == "mandriva"
+            urls << Repodata::MandrivaRepoDumper.new(url)
+        elsif type == "suse"
+            urls << Repodata::SuseRepoDumper.new(url)
+        elsif type == "suse2"
+            urls << Repodata::Suse2RepoDumper.new(url)
+        elsif type == "index"
+            urls << Repodata::IndexRepoDumper.new(url)
+        elsif type == "arch"
+            urls << Repodata::ArchRepoDumper.new(url)
+        elsif type == "slackware"
+            urls << Repodata::SlackwareRepoDumper.new(url)
+        elsif type == "pclinuxos"
+            urls << Repodata::PCLinuxOSRepoDumper.new(url)
+        elsif type == "gentoo"
+            urls << Repodata::GentooRepoDumper.new(url)
+        elsif type == "lfs"
+            urls << Repodata::LFSRepoDumper.new(url)
         end
       end
       return urls

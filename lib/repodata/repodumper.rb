@@ -30,7 +30,7 @@ module Repodata
     end
 
     def dump
-      decompress
+      open_file
       dump_imp
       cleanup
     end
@@ -46,31 +46,41 @@ module Repodata
     end
 
     private
-    def decompress
+    def open_file
+      @remove_path = nil
       if @filename =~ /\.bz2$/
         file = Tempfile.new('repodata')
-        file.close
-        # hack until ruby 1.9+ has a decent bz2 implementation
-        system("bzcat #{@filename} > #{file.path}")
-        @actual_fn = file.path
-      elsif @filename =~ /\.gz$/
+        path = file.path
+        file.close!
+        system("bzcat #{@filename} > #{path}")
+        @file = File.new(path)
+        @remove_path = path
+      elsif @filename =~ /\.lzma$/
         file = Tempfile.new('repodata')
-        Zlib::GzipReader.open(@filename) do |gz|
-          file.write(gz.read)
+        path = file.path
+        file.close!
+        if not system("lzcat #{@filename} > #{path} 2> /dev/null")
+          system("xzcat #{@filename} > #{path}")
         end
-        file.close
-        @actual_fn = file.path
+        @file = File.new(path)
+        @remove_path = path
+      elsif @filename =~ /\.xz$/
+        file = Tempfile.new('repodata')
+        path = file.path
+        file.close!
+        system("xzcat #{@filename} > #{path}")
+        @file = File.new(path)
+        @remove_path = path
+      elsif @filename =~ /\.[cg]z$/
+        @file = Zlib::GzipReader.open(@filename)
       else
-        @actual_fn = @filename
+        @file = File.new(@filename)
       end
     end
 
     def cleanup
-      if @filename =~ /\.bz2$/
-        File.unlink(@actual_fn)
-      elsif @filename =~ /\.gz$/
-        File.unlink(@actual_fn)
-      end
+      @file.close
+      File.unlink(@remove_path) if @remove_path
     end
 
     def fetch_loop
@@ -81,7 +91,10 @@ module Repodata
       file = File.stat(@filename)
         req['If-Modified-Since'] = file.mtime.httpdate
       end
-      res = Net::HTTP.start(uri.host, uri.port) { |http| http.request(req) }
+      res = Net::HTTP.start(uri.host, uri.port,
+                            :use_ssl => uri.scheme == 'https') do |http|
+        http.request(req)
+      end
       if res.is_a?(Net::HTTPNotModified)
         return res
       elsif res.is_a?(Net::HTTPRedirection)
@@ -92,7 +105,7 @@ module Repodata
       end
     end
 
-    attr_reader :actual_fn
+    attr_reader :file
     attr_reader :filename
     attr_reader :url
   end

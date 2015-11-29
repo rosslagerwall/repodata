@@ -14,9 +14,12 @@ module Repodata
     end
 
     def dump_imp
-      IO.foreach(@actual_fn) do |line|
+      @file.each do |line|
         match = /href=".+?.src.rpm"/.match(line)
-        puts(match[0][6..-10]) if match
+        if match
+          fn = match[0][6..-10].split('-')
+          puts(fn[0..-3].join('-') + ',,' + fn[-2] + ',' + fn[-1])
+        end
       end
     end
   end
